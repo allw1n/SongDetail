@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.songdetailstart.content.SongUtils;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private boolean hasTwoPanes = false;
+    public boolean hasTwoPanes = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +33,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the song list as a RecyclerView.
         RecyclerView recyclerView = findViewById(R.id.song_list);
-        recyclerView.setAdapter
-                (new SimpleItemRecyclerViewAdapter(SongUtils.SONG_ITEMS));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(SongUtils.SONG_ITEMS));
 
         if (findViewById(R.id.song_detail_container) != null) {
             hasTwoPanes = true;
         }
     }
 
-    static class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter
+    class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter
             <SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final List<SongUtils.Song> mValues;
@@ -76,12 +75,21 @@ public class MainActivity extends AppCompatActivity {
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context,
-                            SongDetailActivity.class);
-                    intent.putExtra(SongUtils.SONG_ID_KEY,
-                            holder.getAdapterPosition());
-                    context.startActivity(intent);
+                    int selectedSong = holder.getAdapterPosition();
+
+                    if (hasTwoPanes) {
+                        SongDetailFragment fragment = SongDetailFragment.newInstance(selectedSong);
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.song_detail_container, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, SongDetailActivity.class);
+                        intent.putExtra(SongUtils.SONG_ID_KEY, holder.getAdapterPosition());
+                        context.startActivity(intent);
+                    }
                 }
             });
         }
@@ -91,17 +99,16 @@ public class MainActivity extends AppCompatActivity {
             return mValues.size();
         }
 
-        static class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
             final View mView;
-            final TextView mIdView;
-            final TextView mContentView;
+            final AppCompatTextView mIdView, mContentView;
             SongUtils.Song mItem;
 
             ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mIdView = view.findViewById(R.id.id);
+                mContentView = view.findViewById(R.id.content);
             }
         }
     }

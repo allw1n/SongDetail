@@ -20,9 +20,10 @@ public class SongDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SongDetailFragment newInstance(String param1, String param2) {
+    public static SongDetailFragment newInstance(int selectedSong) {
         SongDetailFragment fragment = new SongDetailFragment();
         Bundle args = new Bundle();
+        args.putInt(SongUtils.SONG_ID_KEY, selectedSong);
         fragment.setArguments(args);
         return fragment;
     }
@@ -30,6 +31,10 @@ public class SongDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getArguments() != null && getArguments().containsKey(SongUtils.SONG_ID_KEY)) {
+            song = SongUtils.SONG_ITEMS.get(getArguments().getInt(SongUtils.SONG_ID_KEY));
+        }
     }
 
     @Override
