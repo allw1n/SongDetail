@@ -26,7 +26,7 @@ public class SongDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
             int selectedSong = getIntent()
                     .getIntExtra(SongUtils.SONG_ID_KEY, 0);
 
@@ -34,7 +34,7 @@ public class SongDetailActivity extends AppCompatActivity {
 
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.song_detail, fragment)
+                    .add(R.id.song_detail_container, fragment)
                     .addToBackStack(null)
                     .commit();
         }
